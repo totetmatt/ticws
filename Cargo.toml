@@ -11,6 +11,7 @@ futures-util = { version = "0.3", default-features = false }
 tokio-tungstenite = "0.21.0"
 tungstenite = "0.21.0"
 futures-channel = "0.3.30"
+url = "2.5.0"
 clap = { version = "4.4.18", features = ["derive"] }
 
 
