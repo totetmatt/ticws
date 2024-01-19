@@ -74,7 +74,6 @@ async fn read_file(tx: futures_channel::mpsc::UnboundedSender<Message>, in_file:
             .read_to_string(&mut content)
             .await
             .expect("Should read the file from start");
-        println!("send");
         tx.unbounded_send(Message::binary(content)).unwrap();
         tokio::time::sleep(Duration::from_secs_f64(refresh_time)).await
     }
