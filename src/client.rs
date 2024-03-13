@@ -65,10 +65,11 @@ async fn main() {
 }
 
 async fn read_file(tx: futures_channel::mpsc::UnboundedSender<Message>, in_file: String, refresh_time:f64) {
-    let mut file = File::open(in_file).await.expect("File should be available");
-
     loop {
-        file.rewind().await.expect("Rewind");
+        let mut file = File::open(in_file.clone())
+            .await
+            .expect("File should be available");
+
         let mut content = String::new();
         let _ = file
             .read_to_string(&mut content)
