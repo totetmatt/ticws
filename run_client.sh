@@ -1,5 +1,5 @@
-TICEXE=./tic80-macos-arm64/tic80
-CLIENT_EXE=./target/release/ticws-client
+TICEXE=./tic80
+CLIENT_EXE=./ticws-client
 SHOWDOWN_FILE="client_showdown_$1_$2.dat"
 
 if [ -z "$1" ] || [ -z "$2" ] ; then

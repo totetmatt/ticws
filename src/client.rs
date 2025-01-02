@@ -3,7 +3,7 @@ use std::time::Duration;
 use clap::Parser;
 use futures_util::{future, pin_mut, StreamExt};
 use tokio::fs::File;
-use tokio::io::{AsyncReadExt, AsyncSeekExt};
+use tokio::io::AsyncReadExt;
 use tokio_tungstenite::{connect_async, tungstenite::protocol::Message};
 
 #[derive(Parser, Debug)]
@@ -47,7 +47,7 @@ async fn main() {
     let (stdin_tx, stdin_rx) = futures_channel::mpsc::unbounded();
     tokio::spawn(read_file(stdin_tx, args.file,args.refresh_time));
 
-    let (ws_stream, _) = connect_async(url).await.expect("Failed to connect");
+    let (ws_stream, _) = connect_async(url.to_string()).await.expect("Failed to connect");
     println!("WebSocket handshake has been successfully completed");
 
     let (write, read) = ws_stream.split();
