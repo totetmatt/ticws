@@ -1,3 +1,4 @@
+mod event;
 use clap::Parser;
 use futures_util::StreamExt;
 use std::time::Duration;
@@ -50,9 +51,10 @@ async fn main() {
         let mut file = File::create(&args.file)
             .await
             .expect("File should be available");
-        let data = message.unwrap().into_data();
+        let data = message.unwrap().into_text().unwrap();
+        let deserialized: event::Event = serde_json::from_str(&data).unwrap();
 
-        file.write_all(&data).await.expect("Write in file");
+        file.write_all(&(deserialized.data.as_bytes())).await.expect("Write in file");
     });
     a.await;
     loop {

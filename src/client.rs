@@ -1,5 +1,5 @@
+mod event;
 use std::time::Duration;
-
 use clap::Parser;
 use futures_util::{future, pin_mut, StreamExt};
 use tokio::fs::File;
@@ -75,7 +75,13 @@ async fn read_file(tx: futures_channel::mpsc::UnboundedSender<Message>, in_file:
             .read_to_string(&mut content)
             .await
             .expect("Should read the file from start");
-        tx.unbounded_send(Message::binary(content)).unwrap();
+        let msg = event::Event{
+            s:"tic80".to_owned(), 
+            id:"id".to_owned(),
+            data:content
+        };
+        let serialized_msg = serde_json::to_string(&msg).unwrap();
+        tx.unbounded_send(Message::binary(serialized_msg)).unwrap();
         tokio::time::sleep(Duration::from_secs_f64(refresh_time)).await
     }
 }
