@@ -45,7 +45,7 @@ async fn main() {
     let url = url::Url::parse(&connect_addr).unwrap();
 
     let (stdin_tx, stdin_rx) = futures_channel::mpsc::unbounded();
-    tokio::spawn(read_file(stdin_tx, args.file,args.refresh_time));
+    tokio::spawn(read_file(stdin_tx, args.file,args.refresh_time,format!("{}/{}",args.room,args.handle)));
 
     let (ws_stream, _) = connect_async(url.to_string()).await.expect("Failed to connect");
     println!("WebSocket handshake has been successfully completed");
@@ -64,7 +64,7 @@ async fn main() {
     future::select(stdin_to_ws, ws_to_stdout).await;
 }
 
-async fn read_file(tx: futures_channel::mpsc::UnboundedSender<Message>, in_file: String, refresh_time:f64) {
+async fn read_file(tx: futures_channel::mpsc::UnboundedSender<Message>, in_file: String, refresh_time:f64, id:String) {
     loop {
         let mut file = File::open(in_file.clone())
             .await
@@ -77,7 +77,7 @@ async fn read_file(tx: futures_channel::mpsc::UnboundedSender<Message>, in_file:
             .expect("Should read the file from start");
         let msg = event::Event{
             s:"tic80".to_owned(), 
-            id:"id".to_owned(),
+            id: id.clone(),
             data:content
         };
         let serialized_msg = serde_json::to_string(&msg).unwrap();

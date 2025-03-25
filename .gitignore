@@ -1,3 +1,4 @@
 target/
 tic80
 *.dat
+*.exe
