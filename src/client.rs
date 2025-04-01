@@ -81,7 +81,7 @@ async fn read_file(tx: futures_channel::mpsc::UnboundedSender<Message>, in_file:
             data:content
         };
         let serialized_msg = serde_json::to_string(&msg).unwrap();
-        tx.unbounded_send(Message::binary(serialized_msg)).unwrap();
+        tx.unbounded_send(Message::text(serialized_msg)).unwrap();
         tokio::time::sleep(Duration::from_secs_f64(refresh_time)).await
     }
 }

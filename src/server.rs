@@ -52,9 +52,13 @@ async fn main() {
             .await
             .expect("File should be available");
         let data = message.unwrap().into_text().unwrap();
-        let deserialized: event::Event = serde_json::from_str(&data).unwrap();
-
-        file.write_all(&(deserialized.data.as_bytes())).await.expect("Write in file");
+        let deserialized = serde_json::from_str(&data);
+        if deserialized.is_ok() {
+            let deserialized: event::Event = deserialized.unwrap();
+            file.write_all(&(deserialized.data.as_bytes())).await.expect("Write in file");
+        } else {
+            eprintln!("Warning : serde_json failed ")
+        }
     });
     a.await;
     loop {
