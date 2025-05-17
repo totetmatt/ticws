@@ -9,7 +9,7 @@ use tokio_tungstenite::connect_async;
 #[derive(Parser, Debug)]
 #[command(name = "ticws-server")]
 #[command(author = "Matthieu Totet <matthieu.totet@gmail.com>")]
-#[command(version = "1.0")]
+#[command(version = "1.2.0")]
 #[command(about = "Websocket relay server for Tic80 bytebattle based on bonzomatic protocol", long_about = None)]
 pub struct TicwsServer {
     /// Room Name
@@ -52,13 +52,17 @@ async fn main() {
             .await
             .expect("File should be available");
         let data = message.unwrap().into_text().unwrap();
+        if data.is_empty() { // Sometime there is some emty package, ping ? So we need to discard them to avoid raising error
+            return;
+        }
         let deserialized = serde_json::from_str(&data);
         if deserialized.is_ok() {
             let deserialized: event::Event = deserialized.unwrap();
             file.write_all(&(deserialized.data.as_bytes())).await.expect("Write in file");
         } else {
-            eprintln!("Warning : serde_json failed ")
+            eprintln!("Warning : serde_json failed ");
         }
+
     });
     a.await;
     loop {

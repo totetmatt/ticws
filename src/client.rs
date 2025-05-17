@@ -9,7 +9,7 @@ use tokio_tungstenite::{connect_async, tungstenite::protocol::Message};
 #[derive(Parser, Debug)]
 #[command(name = "ticws-client")]
 #[command(author = "Matthieu Totet <matthieu.totet@gmail.com>")]
-#[command(version = "1.0")]
+#[command(version = "1.2.0")]
 #[command(about = "Websocket client relay for Tic80 bytebattle based on bonzomatic protocol", long_about = None)]
 pub struct TicwsClient {
     /// Room Name
