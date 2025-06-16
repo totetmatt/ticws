@@ -20,9 +20,14 @@ jobs:
           - build: macos
             os: macos-latest
             target: x86_64-apple-darwin
+
           - build:  Windows-x86_64
             os:  windows-latest
             target: x86_64-pc-windows-msvc
+
+          - build: macos-arm 
+            os :  macos-latest
+            target : aarch64-apple-darwin
 
 
     steps:
@@ -40,26 +45,35 @@ jobs:
         with:
           # Make Rust compile to our target (defined in the matrix)
           targets: ${{ matrix.target }}
-
+      - name: Update Version File
+        shell: bash
+        run: |
+          git describe --tags --abbrev=0 > .VERSION
       - name: Build
         uses: actions-rs/cargo@v1
         with:
           use-cross: true
           command: build
-          args: --verbose --release --target ${{ matrix.target }}
+          args: --verbose --release --target ${{ matrix.target }} 
 
       - name: Build archive
         shell: bash
         run: |
           # Replace with the name of your binary
-          binary_name="bonzomatic-texture-manager"
-
-          dirname="$binary_name-${{ env.VERSION }}-${{ matrix.target }}"
+          binary_name_client="ticws-client"
+          binary_name_server="ticws-server"
+          dirname="ticws-${{ env.VERSION }}-${{ matrix.target }}"
           mkdir "$dirname"
           if [ "${{ matrix.os }}" = "windows-latest" ]; then
-            mv "target/${{ matrix.target }}/release/$binary_name.exe" "$dirname"
+            mv "target/${{ matrix.target }}/release/$binary_name_client.exe" "$dirname"
+            mv "target/${{ matrix.target }}/release/$binary_name_server.exe" "$dirname"
+            mv "run_client.bat" "$dirname"
+            mv "run_server.bat" "$dirname"
           else
-            mv "target/${{ matrix.target }}/release/$binary_name" "$dirname"
+            mv "target/${{ matrix.target }}/release/$binary_name_client" "$dirname"
+            mv "target/${{ matrix.target }}/release/$binary_name_server" "$dirname"
+            mv "run_client.sh" "$dirname"
+            mv "run_server.sh" "$dirname"
           fi
 
           if [ "${{ matrix.os }}" = "windows-latest" ]; then

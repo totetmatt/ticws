@@ -9,8 +9,8 @@ use tokio_tungstenite::connect_async;
 #[derive(Parser, Debug)]
 #[command(name = "ticws-server")]
 #[command(author = "Matthieu Totet <matthieu.totet@gmail.com>")]
-#[command(version = "1.2.0")]
-#[command(about = "Websocket relay server for Tic80 bytebattle based on bonzomatic protocol", long_about = None)]
+#[command(version = include_str!("../.VERSION"))]
+#[command(about = "Websocket relay server for Tic80 bytebattle based on bonzomatic protocol", long_about = "Please check that Client and Server version are aligned")]
 pub struct TicwsServer {
     /// Room Name
     pub room: String,
