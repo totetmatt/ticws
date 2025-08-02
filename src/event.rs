@@ -1,12 +1,10 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Event {
     // Common Livecode Message Interface
-    pub s:String,
-    pub id:String,
+    pub s: String,
+    pub id: String,
     // END Common Livecode Message Interface
-
-    pub data:String
+    pub data: String,
 }
-

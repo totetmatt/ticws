@@ -10,7 +10,10 @@ use tokio_tungstenite::connect_async;
 #[command(name = "ticws-server")]
 #[command(author = "Matthieu Totet <matthieu.totet@gmail.com>")]
 #[command(version = include_str!("../.VERSION"))]
-#[command(about = "Websocket relay server for Tic80 bytebattle based on bonzomatic protocol", long_about = "Please check that Client and Server version are aligned")]
+#[command(
+    about = "Websocket relay server for Tic80 bytebattle based on bonzomatic protocol",
+    long_about = "Please check that Client and Server version are aligned"
+)]
 pub struct TicwsServer {
     /// Room Name
     pub room: String,
@@ -28,7 +31,6 @@ pub struct TicwsServer {
     #[arg(default_value_t = String::from("9000"))]
     /// Port number
     pub port: String,
-    
 }
 
 #[tokio::main]
@@ -42,7 +44,9 @@ async fn main() {
 
     // Server don't care about sending stuff as it just listen and dump in file
 
-    let (ws_stream, _) = connect_async(url.to_string()).await.expect("Failed to connect");
+    let (ws_stream, _) = connect_async(url.to_string())
+        .await
+        .expect("Failed to connect");
     println!("WebSocket handshake has been successfully completed");
 
     let (_, read) = ws_stream.split();
@@ -52,17 +56,19 @@ async fn main() {
             .await
             .expect("File should be available");
         let data = message.unwrap().into_text().unwrap();
-        if data.is_empty() { // Sometime there is some emty package, ping ? So we need to discard them to avoid raising error
+        if data.is_empty() {
+            // Sometime there is some emty package, ping ? So we need to discard them to avoid raising error
             return;
         }
-        let deserialized = serde_json::from_str(&data);
-        if deserialized.is_ok() {
-            let deserialized: event::Event = deserialized.unwrap();
-            file.write_all(&(deserialized.data.as_bytes())).await.expect("Write in file");
-        } else {
-            eprintln!("Warning : serde_json failed ");
-        }
 
+        match serde_json::from_str(&data) {
+            Ok::<event::Event, _>(deserialized) => {
+                file.write_all(&(deserialized.data.as_bytes()))
+                    .await
+                    .expect("Write in file");
+            }
+            _ => eprintln!("Warning : serde_json failed "),
+        }
     });
     a.await;
     loop {
